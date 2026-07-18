@@ -173,3 +173,84 @@ curl -X POST http://localhost:8080/api/locations \
 curl http://localhost:8080/api/couriers/courier-1/distance
 curl http://localhost:8080/api/store-visits
 ```
+
+
+                          POST /api/locations
+                                  │
+                                  ▼
+                      TrackingController
+                                  │
+                                  ▼
+              CourierLocationIngestionService
+                                  │
+                   Repository.save(event)
+                                  │
+                                  ▼
+                 LocationEventPublisher (Subject)
+                                  │
+          publish(CourierLocationEvent event)
+            ┌─────────────────────┴─────────────────────┐
+            │                                           │
+            ▼                                           ▼
+ DistanceTrackingObserver                 StoreEntranceObserver
+            │                                           │
+            ▼                                           ▼
+ CourierStatisticsService                  StoreVisitService
+            │                                           │
+   recalculate(courierId)                recalculate(courierId)
+            │                                           │
+            ▼                                           ▼
+ Toplam Mesafeyi Güncelle          100 m kontrolü + 1 dk kuralı
+                                                │
+                                                ▼
+                                        StoreVisitLog
+
+
+
+                Yeni Location Geldi
+                        │
+                        ▼
+                  publish(event)
+                        │
+        ┌───────────────┼─────────────────┐
+        ▼               ▼                 ▼
+ Mesafeyi Güncelle   Store Girişi     (İleride)
+                     Kontrol Et      Kafka'ya Gönder
+                                        │
+                                        ▼
+                                  SMS / Mail /
+                                   Analytics
+
+
+
+                 DistanceStrategy
+              distanceMeters(...)
+                       ▲
+          ┌────────────┴─────────────┐
+          │                          │
+          ▼                          ▼
+CourierStatisticsService     StoreVisitService
+          │                          │
+          ▼                          ▼
+Toplam Mesafe             Store'a Uzaklık
+
+
+                    Mesafe Hesapla
+                           │
+                           ▼
+              DistanceStrategy (Interface)
+                           │
+          distanceMeters(lat1,lng1,lat2,lng2)
+                           │
+                           ▼
+            HaversineDistanceStrategy
+                           ▲
+          ┌────────────────┴────────────────┐
+          │                                 │
+          ▼                                 ▼
+CourierStatisticsService         StoreVisitService
+          │                                 │
+          ▼                                 ▼
+Toplam Mesafe                 100 m Kontrolü
+
+
