@@ -1,3 +1,4 @@
+com/migros/couriertracking/service/impl/CourierStatisticsServiceImpl.class
 com/migros/couriertracking/observer/LocationEventObserver.class
 com/migros/couriertracking/catalog/JsonStoreCatalog.class
 com/migros/couriertracking/repository/CourierEventRepository.class
@@ -15,9 +16,12 @@ com/migros/couriertracking/domain/StoreVisitLog.class
 com/migros/couriertracking/controller/StoreController.class
 com/migros/couriertracking/service/StoreVisitService.class
 com/migros/couriertracking/observer/StoreEntranceObserver.class
+com/migros/couriertracking/CourierTrackingApplication.class
 com/migros/couriertracking/service/CourierLocationIngestionService.class
 com/migros/couriertracking/domain/CourierLocationEvent.class
 com/migros/couriertracking/dto/StoreVisitResponse.class
 com/migros/couriertracking/dto/CourierLocationRequest.class
 com/migros/couriertracking/strategy/HaversineDistanceStrategy.class
+com/migros/couriertracking/service/impl/CourierLocationIngestionServiceImpl.class
 com/migros/couriertracking/dto/CourierDistanceResponse.class
+com/migros/couriertracking/service/impl/StoreVisitServiceImpl.class

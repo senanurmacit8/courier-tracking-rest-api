@@ -19,5 +19,8 @@
 /workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/CourierLocationIngestionService.java
 /workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/CourierStatisticsService.java
 /workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/StoreVisitService.java
+/workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/impl/CourierLocationIngestionServiceImpl.java
+/workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/impl/CourierStatisticsServiceImpl.java
+/workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/service/impl/StoreVisitServiceImpl.java
 /workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/strategy/DistanceStrategy.java
 /workspaces/codespaces-blank/src/main/java/com/migros/couriertracking/strategy/HaversineDistanceStrategy.java

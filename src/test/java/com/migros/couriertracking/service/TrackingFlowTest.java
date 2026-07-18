@@ -5,6 +5,9 @@ import com.migros.couriertracking.domain.Store;
 import com.migros.couriertracking.observer.LocationEventPublisher;
 import com.migros.couriertracking.repository.CourierEventRepository;
 import com.migros.couriertracking.repository.InMemoryCourierEventRepository;
+import com.migros.couriertracking.service.impl.CourierLocationIngestionServiceImpl;
+import com.migros.couriertracking.service.impl.CourierStatisticsServiceImpl;
+import com.migros.couriertracking.service.impl.StoreVisitServiceImpl;
 import com.migros.couriertracking.strategy.DistanceStrategy;
 import com.migros.couriertracking.strategy.HaversineDistanceStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,13 +45,13 @@ class TrackingFlowTest {
             }
         };
         distanceStrategy = new HaversineDistanceStrategy();
-        courierStatisticsService = new CourierStatisticsService(courierEventRepository, distanceStrategy);
-        storeVisitService = new StoreVisitService(courierEventRepository, storeCatalog, distanceStrategy);
+        courierStatisticsService = new CourierStatisticsServiceImpl(courierEventRepository, distanceStrategy);
+        storeVisitService = new StoreVisitServiceImpl(courierEventRepository, storeCatalog, distanceStrategy);
         LocationEventPublisher publisher = new LocationEventPublisher(List.of(
                 event -> courierStatisticsService.recalculate(event.courierId()),
                 event -> storeVisitService.recalculate(event.courierId())
         ));
-        ingestionService = new CourierLocationIngestionService(
+        ingestionService = new CourierLocationIngestionServiceImpl(
                 courierEventRepository,
             publisher
         );
