@@ -67,4 +67,11 @@ Example response:
 ## Notes
 
 - Store locations are loaded from `src/main/resources/stores.json`.
-- All state is in-memory for simplicity.
+- Given the scope and evaluation setup of this project, in-memory data
+  structures were chosen over a persistent database. This lets the project
+  be run and evaluated instantly without any extra infrastructure dependency
+  (DB setup, migrations, connection configuration).
+- The repository layer is abstracted behind the `CourierEventRepository`
+  interface specifically to isolate this choice - moving to a persistent
+  store (e.g. PostgreSQL via Spring Data JPA) later would only require a new
+  repository implementation; the service layer would not need to change.
