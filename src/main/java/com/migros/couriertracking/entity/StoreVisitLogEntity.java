@@ -9,11 +9,7 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-/**
- * JPA representation of a confirmed store visit. Kept separate from the
- * {@code domain.StoreVisitLog} record for the same reason as
- * {@link CourierLocationEventEntity}.
- */
+// JPA entity for a confirmed store visit, same idea as CourierLocationEventEntity.
 @Entity
 @Table(name = "store_visit_log")
 public class StoreVisitLogEntity {

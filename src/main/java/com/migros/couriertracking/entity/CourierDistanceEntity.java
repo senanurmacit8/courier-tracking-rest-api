@@ -5,10 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-/**
- * Stores the last computed total travel distance for a courier. One row per
- * courier - each recalculation overwrites the previous value (upsert).
- */
+// One row per courier with the last computed total distance. Each recalculation
+// just overwrites the previous value.
 @Entity
 @Table(name = "courier_distance")
 public class CourierDistanceEntity {

@@ -9,11 +9,8 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-/**
- * JPA representation of a raw courier location event. Kept separate from the
- * {@code domain.CourierLocationEvent} record so the persistence details
- * (id, table mapping) never leak into the business logic layer.
- */
+// JPA entity for raw location events. Kept separate from the CourierLocationEvent
+// record so JPA annotations don't leak into the domain/service layer.
 @Entity
 @Table(name = "courier_location_event")
 public class CourierLocationEventEntity {

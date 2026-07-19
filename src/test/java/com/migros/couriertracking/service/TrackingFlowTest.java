@@ -9,11 +9,8 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * End-to-end flow test running against the real Spring context and an
- * in-memory H2 database (see src/test/resources/application.properties),
- * exercising the same JPA repositories used in production.
- */
+// End-to-end test with the real Spring context, backed by the in-memory H2
+// profile in src/test/resources/application.properties.
 @SpringBootTest
 class TrackingFlowTest {
 

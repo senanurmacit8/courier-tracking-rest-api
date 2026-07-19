@@ -7,12 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * JPA-backed implementation of {@link CourierEventRepository}. Converts
- * between the persistence entity ({@link CourierLocationEventEntity}) and
- * the plain domain record ({@link CourierLocationEvent}) so the rest of the
- * application never depends on JPA directly.
- */
+// Converts between the JPA entity and the domain record, so the rest of the
+// app doesn't need to know JPA exists.
 @Repository
 public class JpaCourierEventRepository implements CourierEventRepository {
 
