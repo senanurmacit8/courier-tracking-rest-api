@@ -4,17 +4,18 @@ import com.migros.couriertracking.catalog.StoreCatalog;
 import com.migros.couriertracking.domain.CourierLocationEvent;
 import com.migros.couriertracking.domain.Store;
 import com.migros.couriertracking.domain.StoreVisitLog;
+import com.migros.couriertracking.entity.StoreVisitLogEntity;
 import com.migros.couriertracking.repository.CourierEventRepository;
+import com.migros.couriertracking.repository.jpa.StoreVisitLogJpaRepository;
 import com.migros.couriertracking.service.StoreVisitService;
 import com.migros.couriertracking.strategy.DistanceStrategy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class StoreVisitServiceImpl implements StoreVisitService {
@@ -25,17 +26,20 @@ public class StoreVisitServiceImpl implements StoreVisitService {
     private final CourierEventRepository courierEventRepository;
     private final StoreCatalog storeCatalog;
     private final DistanceStrategy distanceStrategy;
-    private final Map<String, List<StoreVisitLog>> visitsByCourier = new ConcurrentHashMap<>();
+    private final StoreVisitLogJpaRepository storeVisitLogJpaRepository;
 
     public StoreVisitServiceImpl(CourierEventRepository courierEventRepository,
                                 StoreCatalog storeCatalog,
-                                DistanceStrategy distanceStrategy) {
+                                DistanceStrategy distanceStrategy,
+                                StoreVisitLogJpaRepository storeVisitLogJpaRepository) {
         this.courierEventRepository = courierEventRepository;
         this.storeCatalog = storeCatalog;
         this.distanceStrategy = distanceStrategy;
+        this.storeVisitLogJpaRepository = storeVisitLogJpaRepository;
     }
 
     @Override
+    @Transactional
     public void recalculate(String courierId) {
         List<CourierLocationEvent> events = courierEventRepository.getEvents(courierId);
         List<StoreVisitLog> calculatedVisits = new ArrayList<>();
@@ -65,20 +69,34 @@ public class StoreVisitServiceImpl implements StoreVisitService {
         }
 
         calculatedVisits.sort(Comparator.comparing(StoreVisitLog::time).thenComparing(StoreVisitLog::storeId));
-        visitsByCourier.put(courierId, List.copyOf(calculatedVisits));
+
+        // Replace this courier's previously stored visits entirely, since
+        // calculatedVisits is always the full, authoritative recomputation.
+        storeVisitLogJpaRepository.deleteByCourierId(courierId);
+        storeVisitLogJpaRepository.saveAll(calculatedVisits.stream()
+                .map(visit -> new StoreVisitLogEntity(
+                        visit.time(), visit.courierId(), visit.storeId(), visit.storeName(), visit.lat(), visit.lng()
+                ))
+                .toList());
     }
 
     @Override
     public List<StoreVisitLog> getAllVisits() {
-        return visitsByCourier.values().stream()
-                .flatMap(List::stream)
-                .sorted(Comparator.comparing(StoreVisitLog::time).thenComparing(StoreVisitLog::courierId))
+        return storeVisitLogJpaRepository.findAllByOrderByTimeAscCourierIdAsc().stream()
+                .map(this::toDomain)
                 .toList();
     }
 
     @Override
     public List<StoreVisitLog> getVisitsForCourier(String courierId) {
-        return visitsByCourier.getOrDefault(courierId, List.of());
+        return storeVisitLogJpaRepository.findByCourierIdOrderByTimeAscStoreIdAsc(courierId).stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    private StoreVisitLog toDomain(StoreVisitLogEntity entity) {
+        return new StoreVisitLog(entity.getTime(), entity.getCourierId(), entity.getStoreId(), entity.getStoreName(),
+                entity.getLat(), entity.getLng());
     }
 
     private boolean isInsideStore(CourierLocationEvent event, Store store) {
@@ -93,3 +111,4 @@ public class StoreVisitServiceImpl implements StoreVisitService {
         return !currentEvent.time().isBefore(lastCountedEntrance.time().plus(REENTRY_COOLDOWN));
     }
 }
+

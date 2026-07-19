@@ -1,28 +1,33 @@
 package com.migros.couriertracking.service.impl;
 
 import com.migros.couriertracking.domain.CourierLocationEvent;
+import com.migros.couriertracking.entity.CourierDistanceEntity;
 import com.migros.couriertracking.repository.CourierEventRepository;
+import com.migros.couriertracking.repository.jpa.CourierDistanceJpaRepository;
 import com.migros.couriertracking.service.CourierStatisticsService;
 import com.migros.couriertracking.strategy.DistanceStrategy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class CourierStatisticsServiceImpl implements CourierStatisticsService {
 
     private final CourierEventRepository courierEventRepository;
+    private final CourierDistanceJpaRepository courierDistanceJpaRepository;
     private final DistanceStrategy distanceStrategy;
-    private final Map<String, Double> totalDistanceByCourier = new ConcurrentHashMap<>();
 
-    public CourierStatisticsServiceImpl(CourierEventRepository courierEventRepository, DistanceStrategy distanceStrategy) {
+    public CourierStatisticsServiceImpl(CourierEventRepository courierEventRepository,
+                                         CourierDistanceJpaRepository courierDistanceJpaRepository,
+                                         DistanceStrategy distanceStrategy) {
         this.courierEventRepository = courierEventRepository;
+        this.courierDistanceJpaRepository = courierDistanceJpaRepository;
         this.distanceStrategy = distanceStrategy;
     }
 
     @Override
+    @Transactional
     public void recalculate(String courierId) {
         List<CourierLocationEvent> events = courierEventRepository.getEvents(courierId);
         double totalDistance = 0.0;
@@ -38,11 +43,14 @@ public class CourierStatisticsServiceImpl implements CourierStatisticsService {
             );
         }
 
-        totalDistanceByCourier.put(courierId, totalDistance);
+        courierDistanceJpaRepository.save(new CourierDistanceEntity(courierId, totalDistance));
     }
 
     @Override
     public double getTotalTravelDistance(String courierId) {
-        return totalDistanceByCourier.getOrDefault(courierId, 0.0);
+        return courierDistanceJpaRepository.findById(courierId)
+                .map(CourierDistanceEntity::getTotalDistanceMeters)
+                .orElse(0.0);
     }
 }
+

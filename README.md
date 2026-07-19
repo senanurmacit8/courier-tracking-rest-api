@@ -11,6 +11,8 @@ This is a Spring Boot REST application for streaming courier geolocations.
 - Uses two design patterns:
   - Strategy for distance calculation.
   - Observer for reacting to incoming courier locations.
+- Persists courier events, travel distance and store visit logs in an H2
+  database via Spring Data JPA, so data survives application restarts.
 
 ## Run
 
@@ -67,11 +69,15 @@ Example response:
 ## Notes
 
 - Store locations are loaded from `src/main/resources/stores.json`.
-- Given the scope and evaluation setup of this project, in-memory data
-  structures were chosen over a persistent database. This lets the project
-  be run and evaluated instantly without any extra infrastructure dependency
-  (DB setup, migrations, connection configuration).
+- Courier location events, computed travel distances and store visit logs
+  are persisted through Spring Data JPA into a file-based H2 database
+  (`./data/courier-tracking`), so state is no longer lost on restart.
+- H2 was chosen instead of a full PostgreSQL/MySQL setup because it requires
+  no external installation or container - the project still runs with a
+  single `mvn spring-boot:run` while behaving like a real relational
+  database (JDBC driver, SQL dialect, JPA entities, transactions).
 - The repository layer is abstracted behind the `CourierEventRepository`
-  interface specifically to isolate this choice - moving to a persistent
-  store (e.g. PostgreSQL via Spring Data JPA) later would only require a new
-  repository implementation; the service layer would not need to change.
+  interface, so the underlying store (`JpaCourierEventRepository`) could be
+  swapped for another database (e.g. PostgreSQL) by only changing the
+  datasource configuration and dependency - the service layer does not
+  depend on JPA directly.
