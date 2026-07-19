@@ -9,8 +9,6 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// End-to-end test with the real Spring context, backed by the in-memory H2
-// profile in src/test/resources/application.properties.
 @SpringBootTest
 class TrackingFlowTest {
 
