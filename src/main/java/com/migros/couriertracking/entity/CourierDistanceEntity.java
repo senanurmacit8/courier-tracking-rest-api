@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-// One row per courier with the last computed total distance. Each recalculation
-// just overwrites the previous value.
 @Entity
 @Table(name = "courier_distance")
 public class CourierDistanceEntity {

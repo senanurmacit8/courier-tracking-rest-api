@@ -9,8 +9,7 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-// JPA entity for raw location events. Kept separate from the CourierLocationEvent
-// record so JPA annotations don't leak into the domain/service layer.
+
 @Entity
 @Table(name = "courier_location_event")
 public class CourierLocationEventEntity {

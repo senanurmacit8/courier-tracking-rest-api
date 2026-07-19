@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-// JPA entity for a confirmed store visit, same idea as CourierLocationEventEntity.
 @Entity
 @Table(name = "store_visit_log")
 public class StoreVisitLogEntity {

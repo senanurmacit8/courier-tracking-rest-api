@@ -70,7 +70,6 @@ public class StoreVisitServiceImpl implements StoreVisitService {
 
         calculatedVisits.sort(Comparator.comparing(StoreVisitLog::time).thenComparing(StoreVisitLog::storeId));
 
-        // calculatedVisits is a full recompute, so just wipe the old rows and re-save.
         storeVisitLogJpaRepository.deleteByCourierId(courierId);
         storeVisitLogJpaRepository.saveAll(calculatedVisits.stream()
                 .map(visit -> new StoreVisitLogEntity(
